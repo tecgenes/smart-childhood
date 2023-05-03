@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Web\V1\ControlPanelController;
+use App\Http\Controllers\Web\V1\WelcomeController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +16,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+Auth::routes(['verify' => true]);
+Route::group(['middleware' => ['guest'],], function () {
+    Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+    Route::get('/term-conditions', [WelcomeController::class, 'termConditions'])->name('term-conditions');
 });
+
+Route::group(['middleware' => ['auth', 'verified']], function () {
+    Route::get('/control-panel', [ControlPanelController::class, 'index'])->name('control_panel');
+});
+
